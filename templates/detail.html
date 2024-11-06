@@ -21,59 +21,61 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container">
-  <div class="jumbotron">
-    <h1>APT Detection System</h1>
-    <p>By NCHIMA</p>
-  </div>
-</div>
+  <header>
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Network Intrusion Detection System</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/">Home</a></li> <!-- Link to the root route -->
+        </ul>
+      </div>
+    </nav>
+  </header>
 
-<div class="container">
-  <b>
-  <h3 align="center">
-  {{ risk|safe }}
-  </h3>
-  </b>
-</div>
-<hr>
-
-{% if exp %}
-  <!-- <h3 align="center">LIME-explained results using {#{ classifier }#}</h3> -->
-  <h3 align="center">LIME-explained results using Random Forest Classifier (Top-6 values):</h3>
   <div class="container">
-      {{ exp|safe }}
+    <b>
+      <h3 align="center">
+        {{ risk|safe }}
+      </h3>
+    </b>
   </div>
-{% endif %}
-<hr>
-<br></br>
+  <hr>
 
-<h3 align="center">Ranking features by reconstruct error by Auto Encoder:</h3>
-<div class="container">
-  {{ ae_plot|safe }}
-</div>
-<hr>
-<br></br>
+  {% if exp %}
+    <h3 align="center">LIME-explained results using Random Forest Classifier (Top-6 values):</h3>
+    <div class="container">
+        {{ exp|safe }}
+    </div>
+  {% endif %}
+  <hr>
+  <br></br>
 
-<h3 align="center">List of all features and values used:
-<div class="container">
-  <!-- <div class="panel-body table-responsive"> -->
-    <table class="table2 table-bordered" >
+  <h3 align="center">Ranking features by reconstruct error by Auto Encoder:</h3>
+  <div class="container">
+    {{ ae_plot|safe }}
+  </div>
+  <hr>
+  <br></br>
+
+  <h3 align="center">List of all features and values used:</h3>
+  <div class="container">
+    <table class="table2 table-bordered">
       {% for table in tables %}
-      <tr>
-        <!-- <td>{#{titles[loop.index]}#}</td> -->
-        <td>{{ table|safe }}</td>
-      </tr>
+        <tr>
+          <td>{{ table|safe }}</td>
+        </tr>
       {% endfor %}
-
     </table>
-</div>
-</h3>
-  <!-- </div> -->
+  </div>
 
-</div>
-
+  <!-- Footer Section -->
+  <footer class="text-center">
+    <div class="container">
+      <p>&copy; 2024 APT Detection System | Designed by Nchima</p>
+      <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </div>
+  </footer>
 </body>
-
-
 </html>
-

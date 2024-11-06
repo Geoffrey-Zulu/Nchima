@@ -3,6 +3,8 @@ from flask import Flask, render_template, url_for, copy_current_request_context,
 from random import random
 from time import sleep
 from threading import Thread, Event
+import mysql.connector
+from flask import Flask, render_template, request, redirect, url_for
 
 from scapy.sendrecv import sniff
 
@@ -60,6 +62,14 @@ app.config['DEBUG'] = True
 
 #turn the flask app into a socketio app
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
+
+def get_db_connection():
+    return mysql.connector.connect(
+        host='localhost', 
+        user='root', 
+        password='', 
+        database='intrusion'
+    )
 
 #random result Generator Thread
 thread = Thread()
@@ -252,11 +262,6 @@ def classify(features):
     ip_data= pd.DataFrame(ip_data)
     ip_data=ip_data.to_json(orient='records')
 
-    # socketio.emit('newresult', {'result': feature_string +[z_scores]+ classification, "ips": json.loads(ip_data)}, namespace='/test')
-    # print(json.loads(ip_data))
-    # # socketio.emit('newresult', {'result': feature_string + classification}, namespace='/test')
-    # return feature_string +[z_scores]+ classification
-
     socketio.emit('newresult', {'result':[flow_count]+ feature_string + classification + proba_score + risk, "ips": json.loads(ip_data)}, namespace='/test')
     # socketio.emit('newresult', {'result': feature_string + classification}, namespace='/test')
     return [flow_count]+ record + classification+ proba_score + risk
@@ -351,10 +356,30 @@ def snif_and_detect():
             classify(f.terminated())
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    #only by sending this page first will the client be connected to the socketio instance
-    return render_template('index.html')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Establish connection to MySQL database
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Query to check if the username and password exist in the database
+        cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+        result = cursor.fetchone()  # Fetch the first matching record
+        
+        # Check if a user was found with the provided credentials
+        if result:
+            return render_template('index.html')  # Redirect to the index.html page after successful login
+
+        # If login fails, display an error message
+        error = 'Invalid username or password. Please try again.'
+        return render_template('login.html', error=error)
+
+    # For GET requests, simply render the login page
+    return render_template('login.html')
 
 @app.route('/flow-detail')
 def flow_detail():
@@ -392,20 +417,6 @@ def flow_detail():
     # return render_template('detail.html',  tables=[flow.to_html(classes='data')], titles=flow.columns.values, explain = exp.as_html())
 
     return render_template('detail.html', tables=[flow.reset_index(drop=True).transpose().to_html(classes='data')], exp=exp.as_html(), ae_plot = plot_div, risk = risk) # titles=flow.columns.values, classifier='RF Classifier'
-
-# @app.route('/flow-detail')
-# def flow_detail():
-#     flow_id = request.args.get('flow_id', default = -1, type = int) #/flow-detail?flow_id=x
-#     flow = flow_df.loc[flow_df['FlowID'] == flow_id].values[1:40]
-#     print(flow)
-#     print(type(flow))
-#     X = normalisation.transform([flow])
-#     explainer = lime.lime_tabular.LimeTabularExplainer(X,feature_names = cols, class_names=['Benign' 'Botnet' 'DDoS' 'DoS' 'FTP-Patator' 'Probe' 'SSH-Patator','Web Attack'],kernel_width=5)
-
-#     choosen_instance = X
-#     exp = explainer.explain_instance(choosen_instance, predict_fn_rf,num_features=10)
-#     # exp.show_in_notebook(show_all=False)
-
 
 
 
