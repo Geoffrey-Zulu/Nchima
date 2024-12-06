@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
 
-    
     <link rel="stylesheet" type="text/css" href="static/css/thirdparty.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
     <link rel="stylesheet" type="text/css" href="static/css/media.css">
@@ -40,14 +39,42 @@
             padding: 20px 0;
             margin-top: auto;  /* Push the footer to the bottom */
         }
+
+        /* Navbar styling */
+        .navbar-header {
+            flex: 1;
+        }
+
+        .navbar-collapse {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* Logout button styling */
+        .logout-button {
+            color: red;
+            text-decoration: none;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        .navbar-text {
+            margin-right: 10px;
+            color: blue;
+        }
     </style>
 </head>
 <body>
   <header>
     <nav class="navbar navbar-default">
-      <div class="container">
+      <div class="container" style="display: flex; align-items: center;">
         <div class="navbar-header">
           <a class="navbar-brand" href="#">Network Intrusion Detection System</a>
+        </div>
+        <div class="navbar-collapse">
+          <p class="navbar-text">Logged in as <strong>Admin</strong></p>
+          <a href="{{ url_for('login') }}" class="logout-button">Logout</a>
         </div>
       </div>
     </nav>
@@ -59,7 +86,7 @@
         <p>Captured flow info here:</p>
         <h3>Captured flow:</h3>
         <div id="log">
-        <table width="100%" border="1" cellpadding="2" cellspacing="0" class="display compact" id="details">
+        <table width="100%" border="1" cellpadding="2" cellspacing="0" class="display compact" id="details"> 
         </table>
         </div> <!-- /#log -->
     </div>

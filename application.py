@@ -356,6 +356,16 @@ def snif_and_detect():
             classify(f.terminated())
 
 
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/home')
+def home():
+    return render_template('index.html')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
