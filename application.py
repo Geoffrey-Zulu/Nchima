@@ -5,6 +5,8 @@ from time import sleep
 from threading import Thread, Event
 import mysql.connector
 from flask import Flask, render_template, request, redirect, url_for
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 
 from scapy.sendrecv import sniff
 
@@ -365,7 +367,6 @@ def login():
 def home():
     return render_template('index.html')
 
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -376,20 +377,67 @@ def index():
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Query to check if the username and password exist in the database
-        cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+        # Query to check if the username exists
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         result = cursor.fetchone()  # Fetch the first matching record
         
-        # Check if a user was found with the provided credentials
+        # Debug: print the result to check the data structure
+        print(f"Query result: {result}")  # result should be a tuple (id, username, hashed_password)
+        
         if result:
-            return render_template('index.html')  # Redirect to the index.html page after successful login
-
+            stored_username = result[1]  # username at index 1
+            stored_password_hash = result[2]  # password at index 2
+            
+            # Debug: print the stored username and hash
+            print(f"Stored username: {stored_username}")
+            print(f"Stored password hash: {stored_password_hash}")
+            
+            # Check if the username and password match
+            if stored_username == username and check_password_hash(stored_password_hash, password):
+                return render_template('index.html')  # Redirect to the index page after successful login
+            
+            print("Password mismatch")
+        
         # If login fails, display an error message
         error = 'Invalid username or password. Please try again.'
         return render_template('login.html', error=error)
 
     # For GET requests, simply render the login page
     return render_template('login.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Hash the password before storing it in the database
+        hashed_password = generate_password_hash(password)
+
+        # Establish connection to MySQL database
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Check if the username already exists in the database
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        existing_user = cursor.fetchone()
+        
+        if existing_user:
+            error = 'Username already exists. Please choose a different one.'
+            return render_template('register.html', error=error)
+
+        # Insert new user into the database
+        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return redirect(url_for('index'))  # Redirect to the login page after successful registration
+
+    # For GET requests, render the registration page
+    return render_template('register.html')
 
 @app.route('/flow-detail')
 def flow_detail():

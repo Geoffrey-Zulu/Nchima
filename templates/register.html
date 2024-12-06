@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
-    <title>Admin Login - Intrusion Detection System</title>
+    <title>Register - Intrusion Detection System</title>
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
@@ -17,14 +17,14 @@
             font-family: Arial, sans-serif;
         }
 
-        .login-container {
+        .register-container {
             width: 100%;
             max-width: 400px;
             margin: 0 auto;
             padding-top: 50px;
         }
 
-        .login-box {
+        .register-box {
             background-color: #fff;
             padding: 40px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -32,12 +32,12 @@
             border: 1px solid #e0e0e0;
         }
 
-        .login-header {
+        .register-header {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .login-header h2 {
+        .register-header h2 {
             margin: 0;
             color: #2c3e50;
         }
@@ -58,7 +58,7 @@
             box-shadow: none;
         }
 
-        .btn-login {
+        .btn-register {
             width: 100%;
             padding: 10px;
             background-color: #3498db;
@@ -69,7 +69,7 @@
             cursor: pointer;
         }
 
-        .btn-login:hover {
+        .btn-register:hover {
             background-color: #2980b9;
         }
 
@@ -93,7 +93,7 @@
             font-size: 14px;
         }
 
-        .register-link {
+        .login-link {
             display: block;
             text-align: center;
             margin-top: 10px;
@@ -102,14 +102,14 @@
 </head>
 
 <body>
-    <div class="login-container">
-        <div class="login-box">
-            <div class="login-header">
-                <h2>Admin Login</h2>
+    <div class="register-container">
+        <div class="register-box">
+            <div class="register-header">
+                <h2>Register</h2>
                 <p>Intrusion Detection System</p>
             </div>
 
-            <form method="POST" action="/">
+            <form method="POST" action="/register">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" class="form-control" id="username" name="username" required placeholder="Enter your username">
@@ -120,15 +120,15 @@
                     <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
                 </div>
 
-                <button type="submit" class="btn-login">Login</button>
+                <button type="submit" class="btn-register">Register</button>
             </form>
 
             {% if error %}
                 <div class="alert">{{ error }}</div>  <!-- Display error message here -->
             {% endif %}
 
-            <div class="register-link">
-                <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+            <div class="login-link">
+                <p>Already have an account? <a href="{{ url_for('index') }}">Login here</a></p>
             </div>
 
             <div class="footer-text">
